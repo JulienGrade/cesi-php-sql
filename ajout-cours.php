@@ -6,28 +6,38 @@ include 'partials/header.php';
 
 require 'request/catalogue.dao.php';
 
+require 'services/imageService.php';
+
 $types = getTypes();
 ?>
 <?php
     // AJOUT
     if(isset($_POST['libelle'], $_POST['description'], $_POST['idType']))
     {
-        $success = addCours($_POST['libelle'], $_POST['description'], $_POST['idType'], "php.jpg");
-        if($success){ ?>
-            <div class="container-md">
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <p>La création s'est bien déroulée</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        $fileImage = $_FILES['imageCours'];
+        $directory = __DIR__."/assets/img/";
+        try{
+           $imageName = ajoutImage($fileImage, $directory, str_replace(' ', '-', strtolower($_POST['libelle'])));
+            $success = addCours($_POST['libelle'], $_POST['description'], $_POST['idType'], $imageName);
+            if($success){ ?>
+                <div class="container-md">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <p>La création s'est bien déroulée</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 </div>
-            </div>
-        <?php }else{ ?>
-            <div class="container-md">
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <p>La création ne s'est pas bien déroulée</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <?php }else{ ?>
+                <div class="container-md">
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <p>La création ne s'est pas bien déroulée</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 </div>
-            </div>
-        <?php }
+            <?php }
+        }catch(Exception $e){
+            echo $e->getMessage();
+        }
+
     }
 ?>
 <div class="container-md mt-5">
@@ -57,8 +67,8 @@ $types = getTypes();
                 </select>
             </div>
             <div class="form-group mt-3">
-                <label for="image">Image du cours :</label>
-                <input type="file" name="image" id="image" class="form-control-file mt-3" />
+                <label for="imageCours">Image du cours :</label>
+                <input type="file" name="imageCours" id="imageCours" class="form-control-file mt-3" />
             </div>
             <input type="submit" value="Enregistrer" class="btn btn-primary btn-lg mt-5" />
         </form>
