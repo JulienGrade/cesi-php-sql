@@ -5,4 +5,5 @@
     </ul>
     <p class="text-center text-muted">&copy; 2023 Company</p>
 </footer>
+<script src="assets/js/script.js"></script>
 
